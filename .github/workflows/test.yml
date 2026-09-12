@@ -1,0 +1,35 @@
+name: Testing Products on Mongoose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:8
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.adminCommand({ ping: 1})"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      MONGO_URI: mongo://127.0.0.1:27017/testdb
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install deps
+        run: npm ci
+      - name: Run the tests
+        run: npm test
