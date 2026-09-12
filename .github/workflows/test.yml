@@ -33,3 +33,11 @@ jobs:
         run: npm ci
       - name: Run the tests
         run: npm test
+        
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to render
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
