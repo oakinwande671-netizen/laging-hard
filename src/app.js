@@ -9,6 +9,9 @@ app.get('/products', async (req, res) => {
     try {
         const products = await Product.find();
 
+        if (!id) {
+            return res.status(400).send("bad request")
+        }
         res.status(200).json(products);
     } catch (error) {
         console.log(error);
@@ -19,16 +22,11 @@ app.get('/products', async (req, res) => {
 // fetch a single product by id
 app.get('/products/:id', async (req, res) => {
     try {
-      const product = await Product.findById(req.params.id);
-
-      if (!product) {
-        return res.status(404).send("Product not found");
-      }
-
-      res.status(200).json(product);
+        const product = await Product.findById(req.params.id);
+        res.status(200).json(product);
     } catch (error) {
-      console.log(error);
-      res.status(500).send("Internal server error");
+        console.log(error);
+        res.status(500).send("Internal server error");
     }
 });
 
@@ -44,7 +42,7 @@ app.post('/products', async (req, res) => {
         const product = await Product.create({
             name, price
         });
-    
+
         res.status(201).json(product)
     } catch (error) {
         console.log(error);
@@ -57,17 +55,17 @@ app.put('/products/:id', async (req, res) => {
     const { name, price } = req.body;
 
     if (!name || !price) {
-      return res.status(400).send("Bad request");
+        return res.status(400).send("Bad request");
     }
 
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, {
-            name, 
+            name,
             price
         },
-        {
-            new: true,
-        });
+            {
+                new: true,
+            });
 
         if (!product) {
             return res.status(404).send("Product not found")
@@ -82,20 +80,20 @@ app.put('/products/:id', async (req, res) => {
 
 // delete a product
 app.delete("/products/:id", async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    try {
+        const product = await Product.findByIdAndDelete(req.params.id);
 
-    if (!product) {
-        return res.status(404).send("Product not found")
+        if (!product) {
+            return res.status(404).send("Product not found")
+        }
+
+        res.status(204).send()
+
+        res.status(200).json(product);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Internal server error");
     }
-
-    res.status(204).send()
-
-    res.status(200).json(product);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal server error");
-  }
 });
 
 module.exports = app;
